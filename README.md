@@ -57,15 +57,25 @@ And the actual installation command.  This is defaulting to a self-signed certif
 
 Connect to Portainer using https://<ip address/or hostname>:9443
 You'll initially need to configure the username and password - note the username defaults to 'admin' but it is a good idea to change that.  
-If you don't connect to the Portainer webpage soon enough, the initial config will time out and require you to restart the container.  Do that by first grabbing the cointainer ID by using ```docker ps```  
-The leftmost entry is the container ID.  Copy that and issue the ```docker restart <container ID>``` command, obviously replacing <container ID> with the string you copied just before.
+If you don't connect to the Portainer webpage soon enough, the initial config will time out and require you to restart the container.  
+Do that by first grabbing the cointainer ID by using ```docker ps```  
+The leftmost entry is the container ID.  
+Copy that and issue the ```docker restart <container ID>``` command, obviously replacing <container ID> with the string you copied just before.
 
 
 # Reverse Proxy
 Since we have portainer installed, we'll use that to run the docker compose to install [Nginx Proxy Manager](https://nginxproxymanager.com/)
 In the Portainer GUI, navigate to Stacks  
-Tap +Add Stack
-Give it a meaningful name - e.g., npm-reverse-proxy
-Copy and paste the data from the /reverse-proxy/docker-compose.yml file.  It's there as a separate file so it can be run directly using docker compose if your prefer.  
-The file will create the Nginx Proxy Manager using a sqlite database
-Click 'Deploy stack'
+Tap +Add Stack  
+Give it a meaningful name - e.g., npm-reverse-proxy  
+Copy and paste the data from the /reverse-proxy/docker-compose.yml file.  
+It's there as a separate file so it can be run directly using docker compose if your prefer.  
+The file will create the Nginx Proxy Manager using a sqlite database  
+Click 'Deploy the stack'
+
+Connect to NPM using <ip/hostname>:81
+The default credentials are  
+Email:    admin@example.com  
+Password: changeme  
+
+You'll be required to immediately change these.
