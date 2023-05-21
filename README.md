@@ -47,16 +47,25 @@ Go to Interface options/SSH and select yes to enable
 ![Imgur](https://i.imgur.com/y4qkmKV.png)
 ![Imgur](https://i.imgur.com/pEUThVR.png)
 
-## Install DockSTARTer
-`sudo apt-get update`  
-`sudo apt-get dist-upgrade`  
-`sudo apt-get install curl git`  
-`bash -c "$(curl -fsSL https://get.docker.com)"`  
-`bash -c "$(curl -fsSL https://get.dockstarter.com)"`  
-`sudo reboot`  
+## Portainer
+Portainer isn't necessarily required, but it provides a nice GUI for checking the status of docker containers.  
+The install instructions can be found on the [Portainer Documentation](https://docs.portainer.io/start/install-ce/server/docker/linux) but it boils down to the following commands:  
+Creation of a volume for the Portainer Server to store its database
+```docker volume create portainer_data```  
+And the actual installation command.  This is defaulting to a self-signed certificate for https  
+```docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest```  
 
-# Configure DockSTARTer
-`ds`  
-I initially added Portainer and Watchtower.  Watchtower is selected by default. I said no to the config as the timezone was incorrect, aside from changing that and hostname to match the system name I'd chosend, I accepted the defaults and let it run the compose.  The containers downloaded and started running (check by running `docker ps`)
+Connect to Portainer using https://<ip address/or hostname>:9443
+You'll initially need to configure the username and password - note the username defaults to 'admin' but it is a good idea to change that.  
+If you don't connect to the Portainer webpage soon enough, the initial config will time out and require you to restart the container.  Do that by first grabbing the cointainer ID by using ```docker ps```  
+The leftmost entry is the container ID.  Copy that and issue the ```docker restart <container ID>``` command, obviously replacing <container ID> with the string you copied just before.
+
 
 # Reverse Proxy
+Since we have portainer installed, we'll use that to run the docker compose to install [Nginx Proxy Manager](https://nginxproxymanager.com/)
+In the Portainer GUI, navigate to Stacks  
+Tap +Add Stack
+Give it a meaningful name - e.g., npm-reverse-proxy
+Copy and paste the data from the /reverse-proxy/docker-compose.yml file.  It's there as a separate file so it can be run directly using docker compose if your prefer.  
+The file will create the Nginx Proxy Manager using a sqlite database
+Click 'Deploy stack'
