@@ -112,9 +112,11 @@ On the SSL tab choose 'request a new SSL certificate
 Enable the Force SSL, HTTP/2 Support and HSTS Enabled options
 
 Finally, on the Advanced tab add the following to the Custom Nginx Configuration
-``` client_body_buffer_size 512k;
+``` 
+client_body_buffer_size 512k;
 proxy_read_timeout 86400s;
-client_max_body_size 0;```
+client_max_body_size 0;
+```
 
 Click Save and the NPM should go off and get a certificate from LetsEncrypt
 
