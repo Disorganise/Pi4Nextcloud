@@ -19,7 +19,7 @@ According to [this article](https://www.pragmaticlinux.com/2021/12/directly-boot
 I did try updating the bootloader as mine was April 2020, but it still wouldn't boot the Unbuntu image even after updating to bootloader Jan 2023. 
 
 I used the Raspberry Pi Imager to download and install 'Rasberry Pi OS (other)/Rasberry Pi OS Lite (64 bit)' onto the USB Hardrive - in my case it's a WD My Passport 2TB.   
-Once the imager has installed the OS, disconnect the drive from the PC (remember to used eject) and plug the drive into one of the blue USB ports on the Pi.  [Note, if there are issues booting the USB, you can try the black USB ports, or first update the bootloader by booting Raspbian of a micros-SD card and then try booring from the USB after the bootloader is updated]
+Once the imager has installed the OS, disconnect the drive from the PC (remember to used eject) and plug the drive into one of the blue USB ports on the Pi.  [Note, if there are issues booting the USB, you can try the black USB ports, or first update the bootloader by booting Raspbian of a micros-SD card and then try booting from the USB after the bootloader is updated]
 
 The steps for updating the bootloader follow:
 
@@ -79,3 +79,56 @@ Email:    admin@example.com
 Password: changeme  
 
 You'll be required to immediately change these.
+
+# Nextcloud
+We're going to go with Nextcloud All-in-one.
+Ultimate sources are:  The example [compose.yaml] (https://github.com/nextcloud/all-in-one/blob/main/compose.yaml)
+and the info about [reverse procy] (https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) 
+
+## Initial Deploy of AIO container
+Go back to Portainer to create a new Stack
+Go to Stacks, the +Add stack
+Give it a meaningful name such as Nextcloud
+
+Copy and paste the data from the /nc-aio/docker-compose.yml file.
+
+Click 'Deploy the stack'
+
+## Set up reverse proxy
+Ensure you have a public domain name available and pointing to your public IP address.  I use https://freedns.afraid.org/, but there are many options.
+
+Now head over to NPM  (i.e. <ip/hostname>:81)
+Add a new Proxy Host
+Enter the fully qualified domain name into the 'Domain Names' section (e.g., nextcloud.mydomain.com)
+Leave the Scheme as http - if you change it to http you get errors
+Add the IP address of the Raspberry Pi
+The Forward Port needs to be match what was in the docker-compose.yml  (where it says - APACHE_PORT=11001).  The default _was_ 11000 but I initially had an error so changed it to 11001.  
+Enable the Clock Common Exploits and Websockets support
+Leave the access list as Publicly Accessible
+
+The Customer locations tab can be left blank
+
+On the SSL tab choose 'request a new SSL certificate
+Enable the Force SSL, HTTP/2 Support and HSTS Enabled options
+
+Finally, on the Advanced tab add the following to the Custom Nginx Configuration
+``` client_body_buffer_size 512k;
+proxy_read_timeout 86400s;
+client_max_body_size 0; ```
+
+Click Save and the NPM should go off and get a certificate from LetsEncrypt
+
+Don't bother trying to click the domain yet, it's not ready - you'll either get an error or if lucky, a token back.
+
+## Continue Nextcloud deployment
+Open a new tab in your browser and go to <ip/hostname>:8080
+You should hopefully get an initial welcome type page from Nextcloud AIO.  Grab the passphrase and use it to log in.
+You should get an initial config page.
+You'll need to enter the FQDN and some other information.  I opted out of all the additional modules - the AV isn't compatible with ARM and the rest don't really interest me.  You choose whatever you want.
+After stepping through the set up you'll hit the download and start containers button.  This will take a while to complete.
+I noticed that when I looked into Portainer, a whole bunch of new containers were running with a couple flagged as unhealthy for quite some time.  It's a bit annoying (to me) that these are all 'loose' rather than being under the nextcloud stack :(
+
+When everything goes healthy, you should be just about ready.
+
+Go back to the <ip/hostname>:8080 tab and click that reload button if necessary.
+You should get a username and password on screen together with an 'Open you Nextcloud' button.  Clicking that should open a new tab using the FQDN - use the admin username and password to log in and follow your nose.
