@@ -134,3 +134,11 @@ When everything goes healthy, you should be just about ready.
 
 Go back to the <ip/hostname>:8080 tab and click that reload button if necessary.
 You should get a username and password on screen together with an 'Open you Nextcloud' button.  Clicking that should open a new tab using the FQDN - use the admin username and password to log in and follow your nose.
+
+### Post deployment fixes
+There's an warning about a "missing default phone region" in the security section.  To fix it, SSH into the Raspbian OS and run the following:
+```sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="2 character country code"```
+
+Where 2 character country code is per [The official list](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements)
+Include the quotes in the command.  e.g. ```sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="AU"```
+
