@@ -139,6 +139,34 @@ You should get a username and password on screen together with an 'Open you Next
 There's an warning about a "missing default phone region" in the security section.  To fix it, SSH into the Raspbian OS and run the following:
 ```sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="2 character country code"```
 
-Where 2 character country code is per [The official list](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements)
+Where 2 character country code is per [The official list](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements)  
 Include the quotes in the command.  e.g. ```sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="AU"```
 
+### Backups
+Much to my chargrin, I find that Raspbian is not well supported for backup.  I'd intended to use Veeam community to pull the files into my Windows PC but the agent wouldn't install.  grrr.
+So workaround;   I took inspiration from [here](https://raspberrytips.com/backup-raspberry-pi/) but skipped the SFTP etc as it seemed unnecessary.
+Create a folder on the windows PC
+Share it - grant modify rights to a user account both to the share permissions and to the NTFS folder permissions.
+
+SSH into the Raspberry Pi
+Create a folder under /media to host the share mapping.  I used pibackup so the command is ```sudo mkdir /media/pibackup```  
+
+now use the command ```sudo nano /etc/fstab```
+There were 5 lines in mine, with the last two being commented.  I just added a new line at the bottom.  
+The format is ```//windowshostname/sharename /media/foldername cifs username=windowsusername,password=windowspassword,iocharset=utf8 0 0```  
+I'd made my share as pi_backup.  Let's imagine the PC hostname was windowspc, and the username was test with a password of pass1234, the command would look like this:  
+```//windowspc/pi_backup /media/pibackup cifs username=test,password=pass1234,iocharset=utf8 0 0```  
+
+Finally, mount the share (or reboot the whole Pi I guess :D)  
+To mount use ```sudo mount /media/pibackup```  
+
+Navigate to /media/pibackup and try ```sudo touch test.txt``` to validate you can create files in the share.
+
+Now head over to <ip/hostname:8080>
+Scroll down to where it is asking for the backup location and enter /media/pibackup
+You should then get an encryption key which you need to note.
+All being well, you should be able to hit the 'create backup' button and accept the warning that containers will go offline.
+The backup will run with time required depending upon data volume and speed of network.
+
+I noticed that when the backup completed, the nexcloud containers remained stopped and you need to click the 'start containers' button.
+Once the first backup is done, you get the option to set a time for a daily backup - note the time is in UTC so the default of 4am my be inconvenient.
