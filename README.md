@@ -82,8 +82,8 @@ You'll be required to immediately change these.
 
 # Nextcloud
 We're going to go with Nextcloud All-in-one.
-Ultimate sources are:  The example [compose.yaml] (https://github.com/nextcloud/all-in-one/blob/main/compose.yaml)
-and the info about [reverse procy] (https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) 
+Ultimate sources are:  The example [compose.yaml](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml)
+and the info about [reverse proxy](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) 
 
 ## Initial Deploy of AIO container
 Go back to Portainer to create a new Stack
@@ -111,7 +111,7 @@ The Customer locations tab can be left blank
 On the SSL tab choose 'request a new SSL certificate
 Enable the Force SSL, HTTP/2 Support and HSTS Enabled options
 
-Finally, on the Advanced tab add the following to the Custom Nginx Configuration
+Finally, on the Advanced tab add the following to the Custom Nginx Configuration.  These are taken from [here](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#nginx-proxy-manager) and from what I gather it's to allow larger file uploads.
 ``` 
 client_body_buffer_size 512k;
 proxy_read_timeout 86400s;
@@ -169,4 +169,40 @@ All being well, you should be able to hit the 'create backup' button and accept 
 The backup will run with time required depending upon data volume and speed of network.
 
 I noticed that when the backup completed, the nexcloud containers remained stopped and you need to click the 'start containers' button.
-Once the first backup is done, you get the option to set a time for a daily backup - note the time is in UTC so the default of 4am my be inconvenient.
+Once the first backup is done, you get the option to set a time for a daily backup - note the time is in UTC so the default of 4am may be inconvenient.
+
+Update:  It seems that a manual backup results in the containers remaining offline.  The schedule backup does actually restart the containers, so that's good.
+However, I'm concerned about the receovery process.  The AIO itself has a simple 'restore to this timestamp' option and it is an all or nothing affair - meaning you can't recover an individual file.  I'm not _that_ worried about the files though TBH, since they're also backed up on my PC so I can always retrieve them there and copy back into the Nextcloud folder.
+The concern is more about 'how to recover the whole machine' assuming the disk got currupted.  So that will be the next test.  My plan is to wipe the disk and start again from the beginning.  I'm hoping there's a way to import the existing borg backups so that they can be recovered....but we'll see.
+
+
+
+
+# Updating
+It's all well and good having containers, but how do we keep them up to date?
+It should be straight forward and hats off to Microsoft to making windows so easy.
+
+## Portainer
+It's always best to update the OS first.
+Assuming ubuntu or similar then run the following two commands:
+```sudo apt update
+sudo apt upgrade```
+
+Say 'Y' to update.
+
+Update instructions can be found on the [portainer site](https://docs.portainer.io/start/upgrade/docker).  So long as we followed the earlier instructions to use a volume for storage, we can replace the container without losing information.
+Double check for yourself:  Navigate the the environment (local in my case), containers, and click the link to portainer (the container).  This will now show the status and at the bottom it should sow the volumes.  You should have a 'portainer_data' volume.
+With that verfied, lets update.  I'm going from 2.18.3 to 2.19.4 if this works correctly.
+
+```sudo docker stop portainer
+sudo docker rm portainer
+sudo docker pull portainer/portainer-ce:latest
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest```
+
+### Portainer agents
+If you have agents running then the update process is similar.
+
+```docker stop portainer_agent
+docker rm portainer_agent
+docker pull portainer/agent:latest
+docker run -d -p 9001:9001 --name portainer_agent --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes portainer/agent:latest```
