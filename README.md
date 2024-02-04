@@ -54,11 +54,11 @@ Portainer isn't necessarily required, but it provides a nice GUI for checking th
 The install instructions can be found on the [Portainer Documentation](https://docs.portainer.io/start/install-ce/server/docker/linux) but it boils down to the following commands:  
 Creation of a volume for the Portainer Server to store its database
 ``` 
-docker volume create portainer_data
+sudo docker volume create portainer_data
 ```  
 And the actual installation command.  This is defaulting to a self-signed certificate for https  
 ```
-docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 ```  
 
 Connect to Portainer using https://<ip address/or hostname>:9443
@@ -103,18 +103,18 @@ Click 'Deploy the stack'
 ## Set up reverse proxy
 Ensure you have a public domain name available and pointing to your public IP address.  I use https://freedns.afraid.org/, but there are many options.
 
-Now head over to NPM  (i.e. <ip/hostname>:81)
+Now head over to NPM  (i.e. <ip/hostname>:81)  
 Add a new Proxy Host
-Enter the fully qualified domain name into the 'Domain Names' section (e.g., nextcloud.mydomain.com)
-Leave the Scheme as http - if you change it to http you get errors
-Add the IP address of the Raspberry Pi
+Enter the fully qualified domain name into the 'Domain Names' section (e.g., nextcloud.mydomain.com)  
+Leave the Scheme as http - if you change it to http you get errors  
+Add the IP address of the Raspberry Pi  
 The Forward Port needs to be match what was in the docker-compose.yml  (where it says - APACHE_PORT=11001).  The default _was_ 11000 but I initially had an error so changed it to 11001.  
-Enable the Clock Common Exploits and Websockets support
+Enable the Block Common Exploits and Websockets support  
 Leave the access list as Publicly Accessible
 
-The Customer locations tab can be left blank
+The Custom locations tab can be left blank
 
-On the SSL tab choose 'request a new SSL certificate
+On the SSL tab choose "Request a new SSL Certificate"  
 Enable the Force SSL, HTTP/2 Support and HSTS Enabled options
 
 Finally, on the Advanced tab add the following to the Custom Nginx Configuration.  These are taken from [here](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#nginx-proxy-manager) and from what I gather it's to allow larger file uploads.
@@ -162,6 +162,9 @@ There were 5 lines in mine, with the last two being commented.  I just added a n
 The format is ```//windowshostname/sharename /media/foldername cifs username=windowsusername,password=windowspassword,iocharset=utf8 0 0```  
 I'd made my share as pi_backup.  Let's imagine the PC hostname was windowspc, and the username was test with a password of pass1234, the command would look like this:  
 ```//windowspc/pi_backup /media/pibackup cifs username=test,password=pass1234,iocharset=utf8 0 0```  
+
+> NB: For Ubuntu you also need to install the cifs-utils package before mounting will work.  
+> 'sudo apt-get install cifs-utils'
 
 Finally, mount the share (or reboot the whole Pi I guess :D)  
 To mount use ```sudo mount /media/pibackup```  
