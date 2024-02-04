@@ -185,8 +185,10 @@ It should be straight forward and hats off to Microsoft to making windows so eas
 ## Portainer
 It's always best to update the OS first.
 Assuming ubuntu or similar then run the following two commands:
-```sudo apt update
-sudo apt upgrade```
+```
+sudo apt update
+sudo apt upgrade
+```
 
 Say 'Y' to update.
 
