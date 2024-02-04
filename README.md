@@ -194,15 +194,19 @@ Update instructions can be found on the [portainer site](https://docs.portainer.
 Double check for yourself:  Navigate the the environment (local in my case), containers, and click the link to portainer (the container).  This will now show the status and at the bottom it should sow the volumes.  You should have a 'portainer_data' volume.
 With that verfied, lets update.  I'm going from 2.18.3 to 2.19.4 if this works correctly.
 
-```sudo docker stop portainer
+```
+sudo docker stop portainer
 sudo docker rm portainer
 sudo docker pull portainer/portainer-ce:latest
-sudo docker run -d -p 8000:8000 -p 9443:9443 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest```
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+```
 
 ### Portainer agents
 If you have agents running then the update process is similar.
 
-```docker stop portainer_agent
+```
+docker stop portainer_agent
 docker rm portainer_agent
 docker pull portainer/agent:latest
-docker run -d -p 9001:9001 --name portainer_agent --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes portainer/agent:latest```
+docker run -d -p 9001:9001 --name portainer_agent --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes portainer/agent:latest
+```
