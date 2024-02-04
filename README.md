@@ -17,9 +17,11 @@ I've a couple of microSD cards become corrupt on me, likely due to the power cut
 
 According to [this article](https://www.pragmaticlinux.com/2021/12/directly-boot-your-raspberry-pi-4-from-a-usb-drive/), most Raspberry Pi4's can boot from USB.  Mine's an 8GB version so I figured it was 'later'.  I originally planned to use the Ubuntu image, but had issues booting from the USB hard drive, so reverted to the Raspbian image.  
 I did try updating the bootloader as mine was April 2020, but it still wouldn't boot the Unbuntu image even after updating to bootloader Jan 2023. 
+> Update Feb 2024, I've got ubuntu working now.  I bought a 1TB  USB SSD.
 
 I used the Raspberry Pi Imager to download and install 'Rasberry Pi OS (other)/Rasberry Pi OS Lite (64 bit)' onto the USB Hardrive - in my case it's a WD My Passport 2TB.   
 Once the imager has installed the OS, disconnect the drive from the PC (remember to used eject) and plug the drive into one of the blue USB ports on the Pi.  [Note, if there are issues booting the USB, you can try the black USB ports, or first update the bootloader by booting Raspbian of a micros-SD card and then try booting from the USB after the bootloader is updated]
+> Update Feb 2024 - I used the Raspberry Pi imgager to download and install the Ubuntu image on the SSD.  It took _forever_ but it worked.  Plugging in the SSD to the Pi4 and removing the microSD card, the Pi booted up no worries.  Ubuntu 22 comes with SSH already enabled too, so if you did this you can skip to Portainer
 
 The steps for updating the bootloader follow:
 
