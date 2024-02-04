@@ -172,7 +172,7 @@ To mount use ```sudo mount /media/pibackup```
 Navigate to /media/pibackup and try ```sudo touch test.txt``` to validate you can create files in the share.
 
 Now head over to <ip/hostname:8080>
-Scroll down to where it is asking for the backup location and enter /media/pibackup
+Scroll down to where it is asking for the backup location and enter '/media/pibackup'  
 You should then get an encryption key which you need to note.
 All being well, you should be able to hit the 'create backup' button and accept the warning that containers will go offline.
 The backup will run with time required depending upon data volume and speed of network.
