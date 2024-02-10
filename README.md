@@ -148,7 +148,7 @@ There's an warning about a "missing default phone region" in the security sectio
 Where 2 character country code is per [The official list](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements)  
 Include the quotes in the command.  e.g. ```sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="AU"```
 
-### Backups
+# Backups
 Much to my chargrin, I find that Raspbian is not well supported for backup.  I'd intended to use Veeam community to pull the files into my Windows PC but the agent wouldn't install.  grrr.
 So workaround;   I took inspiration from [here](https://raspberrytips.com/backup-raspberry-pi/) but skipped the SFTP etc as it seemed unnecessary.
 Create a folder on the windows PC
@@ -183,6 +183,64 @@ Once the first backup is done, you get the option to set a time for a daily back
 Update:  It seems that a manual backup results in the containers remaining offline.  The schedule backup does actually restart the containers, so that's good.
 However, I'm concerned about the receovery process.  The AIO itself has a simple 'restore to this timestamp' option and it is an all or nothing affair - meaning you can't recover an individual file.  I'm not _that_ worried about the files though TBH, since they're also backed up on my PC so I can always retrieve them there and copy back into the Nextcloud folder.
 The concern is more about 'how to recover the whole machine' assuming the disk got currupted.  So that will be the next test.  My plan is to wipe the disk and start again from the beginning.  I'm hoping there's a way to import the existing borg backups so that they can be recovered....but we'll see.
+
+## Recovery Test 
+Since I ended up buying an SSD to run the the Pi, my spinning disk WD passport is now 'spare'.  So I figured I would use that to test recovery.  Documenting my steps here for future reference.  
+
+### 1) Re-image
+Use Raspberry Pi Imager (or similar) to write the Ubuntu image to the disk.  I used Ubuntu Server 22.04.3 LTS (64-bit).  I also custom set the username and password to login, just so I know what they are.
+
+### 2) Swap disk
+Shutdown the Pi.  Replace the SSD with the HDD.  This sets us back to a fresh image whilst leaving the working image untouched - so even if the recovery process is a dead duck, I can still swap the SSD back in and have a working system.
+
+### 3) Boot and config
+Boot the Pi.  Since Ubuntu enabled SSH by default, we can connect remotely already.
+Run 'sudo apt update && sudo apt upgrade -y' to update for the latest patches
+
+My update said something about updating the kernel, so a reboot is required
+'sudo reboot now'  
+This first reboot took forever for me - several minutes.
+
+### 4) Install docker, portainer and Nextcloud AIO
+Since I previously used portainer I'm gonna reinstall it.  However, I'm skipping NPM reverse proxy for two reasons:  
+1) In my set up currently, I have it installed on another server elsewhere and  
+2) I see that NPM can be installed as part of Nextcloud AIO and then its config will be incorporated into the borg backup.  I plan to test that at some point.
+
+#### Install docker:  
+Run following command to set up the repo:
+
+```
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+
+Then to install the latest version of docker, run the following  
+`sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+
+#### Install portainer
+``` 
+sudo docker volume create portainer_data
+```  
+
+```
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+``` 
+
+#### Install AIO
+Go back to Portainer to create a new Stack Go to Stacks, the +Add stack Give it a meaningful name such as Nextcloud  
+Copy and paste the data from the /nc-aio/docker-compose.yml file.  
+Click 'Deploy the stack'  
 
 
 
