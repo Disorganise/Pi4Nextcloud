@@ -258,10 +258,10 @@ I'd made my share as nc_backup.  Let's imagine the PC hostname was windowspc, an
   
 And mount the drive `sudo mount /media/ncbackup`  
 
-Navigate to https://<IP address>:8080
-Copy the password and tap 'Open Nextcloud AIO login'
-Paste the password in the new tab and login
-Scroll down to the 'Restore former AIO instance from backup'
+Navigate to https://<<IP address>>:8080  
+Copy the password and tap 'Open Nextcloud AIO login'  
+Paste the password in the new tab and login  
+Scroll down to the 'Restore former AIO instance from backup'  
 Add the mount point and borg password.  The borg password is the encryption key that you needed to note when original system was set up.  If you don't have it available, then restore is not possible cos goos luck breaking the encryption.  
 The mount point is whatever you created, eg /media/ncbackup
 
