@@ -164,14 +164,14 @@ I'd made my share as nc_backup.  Let's imagine the PC hostname was windowspc, an
 ```//windowspc/nc_backup /media/ncbackup cifs username=test,password=pass1234,iocharset=utf8 0 0```  
 
 > NB: For Ubuntu you also need to install the cifs-utils package before mounting will work.  
-> 'sudo apt-get install cifs-utils'
+> `sudo apt-get install cifs-utils`
 
 Finally, mount the share (or reboot the whole Pi I guess :D)  
 To mount use ```sudo mount /media/ncbackup```  
 
-Navigate to /media/ncbackup and try ```sudo touch test.txt``` to validate you can create files in the share.
+Navigate to `/media/ncbackup` and try ```sudo touch test.txt``` to validate you can create files in the share.
 
-Now head over to <ip/hostname:8080>
+Now head over to `https://<ip/hostname:8080>`
 Scroll down to where it is asking for the backup location and enter `/media/ncbackup`  
 You should then get an encryption key which you need to note.
 All being well, you should be able to hit the 'create backup' button and accept the warning that containers will go offline.
@@ -195,10 +195,10 @@ Shutdown the Pi.  Replace the SSD with the HDD.  This sets us back to a fresh im
 
 ### 3) Boot and config
 Boot the Pi.  Since Ubuntu enabled SSH by default, we can connect remotely already.
-Run 'sudo apt update && sudo apt upgrade -y' to update for the latest patches
+Run `sudo apt update && sudo apt upgrade -y` to update for the latest patches
 
 My update said something about updating the kernel, so a reboot is required
-'sudo reboot now'  
+`sudo reboot now`  
 This first reboot took forever for me - several minutes.
 
 ### 4) Install docker, portainer and Nextcloud AIO
@@ -238,7 +238,7 @@ sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -
 ``` 
 
 #### Install AIO
-Connect to Portainer using https://<ip address/or hostname>:9443 You'll initially need to configure the username and password 
+Connect to Portainer using `https://<ip address/or hostname>:9443` You'll initially need to configure the username and password 
 Navigate to Home/local/stacks to add a stack:  click the +Add stack Give it a meaningful name such as Nextcloud  
 Copy and paste the data from the /nc-aio/docker-compose.yml file.  
 Click 'Deploy the stack'  
@@ -258,12 +258,12 @@ I'd made my share as nc_backup.  Let's imagine the PC hostname was windowspc, an
   
 And mount the drive `sudo mount /media/ncbackup`  
 
-Navigate to https://<<IP address>>:8080  
+Navigate to `https://<ip/hostname>:8080`  
 Copy the password and tap 'Open Nextcloud AIO login'  
 Paste the password in the new tab and login  
 Scroll down to the 'Restore former AIO instance from backup'  
 Add the mount point and borg password.  The borg password is the encryption key that you needed to note when original system was set up.  If you don't have it available, then restore is not possible cos goos luck breaking the encryption.  
-The mount point is whatever you created, eg /media/ncbackup
+The mount point is whatever you created, eg `/media/ncbackup`
 
 Click 'Submit location and password'
 All being you should get an "Everything set!" message, so "Test path and password"
