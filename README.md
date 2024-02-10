@@ -129,7 +129,7 @@ Click Save and the NPM should go off and get a certificate from LetsEncrypt
 Don't bother trying to click the domain yet, it's not ready - you'll either get an error or if lucky, a token back.
 
 ## Continue Nextcloud deployment
-Open a new tab in your browser and go to <ip/hostname>:8080
+Open a new tab in your browser and go to https://<ip/hostname>:8080
 You should hopefully get an initial welcome type page from Nextcloud AIO.  Grab the passphrase and use it to log in.
 You should get an initial config page.
 You'll need to enter the FQDN and some other information.  I opted out of all the additional modules - the AV isn't compatible with ARM and the rest don't really interest me.  You choose whatever you want.
@@ -138,7 +138,7 @@ I noticed that when I looked into Portainer, a whole bunch of new containers wer
 
 When everything goes healthy, you should be just about ready.
 
-Go back to the <ip/hostname>:8080 tab and click that reload button if necessary.
+Go back to the https://<ip/hostname>:8080 tab and click that reload button if necessary.
 You should get a username and password on screen together with an 'Open you Nextcloud' button.  Clicking that should open a new tab using the FQDN - use the admin username and password to log in and follow your nose.
 
 ### Post deployment fixes
@@ -155,24 +155,24 @@ Create a folder on the windows PC
 Share it - grant modify rights to a user account both to the share permissions and to the NTFS folder permissions.
 
 SSH into the Raspberry Pi
-Create a folder under /media to host the share mapping.  I used pibackup so the command is ```sudo mkdir /media/pibackup```  
+Create a folder under /media to host the share mapping.  I used ncbackup so the command is ```sudo mkdir /media/ncbackup```  
 
-now use the command ```sudo nano /etc/fstab```
+Now use the command ```sudo nano /etc/fstab```
 There were 5 lines in mine, with the last two being commented.  I just added a new line at the bottom.  
 The format is ```//windowshostname/sharename /media/foldername cifs username=windowsusername,password=windowspassword,iocharset=utf8 0 0```  
-I'd made my share as pi_backup.  Let's imagine the PC hostname was windowspc, and the username was test with a password of pass1234, the command would look like this:  
-```//windowspc/pi_backup /media/pibackup cifs username=test,password=pass1234,iocharset=utf8 0 0```  
+I'd made my share as nc_backup.  Let's imagine the PC hostname was windowspc, and the username was test with a password of pass1234, the command would look like this:  
+```//windowspc/nc_backup /media/ncbackup cifs username=test,password=pass1234,iocharset=utf8 0 0```  
 
 > NB: For Ubuntu you also need to install the cifs-utils package before mounting will work.  
 > 'sudo apt-get install cifs-utils'
 
 Finally, mount the share (or reboot the whole Pi I guess :D)  
-To mount use ```sudo mount /media/pibackup```  
+To mount use ```sudo mount /media/ncbackup```  
 
-Navigate to /media/pibackup and try ```sudo touch test.txt``` to validate you can create files in the share.
+Navigate to /media/ncbackup and try ```sudo touch test.txt``` to validate you can create files in the share.
 
 Now head over to <ip/hostname:8080>
-Scroll down to where it is asking for the backup location and enter `/media/pibackup`  
+Scroll down to where it is asking for the backup location and enter `/media/ncbackup`  
 You should then get an encryption key which you need to note.
 All being well, you should be able to hit the 'create backup' button and accept the warning that containers will go offline.
 The backup will run with time required depending upon data volume and speed of network.
@@ -238,12 +238,45 @@ sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -
 ``` 
 
 #### Install AIO
-Go back to Portainer to create a new Stack Go to Stacks, the +Add stack Give it a meaningful name such as Nextcloud  
+Connect to Portainer using https://<ip address/or hostname>:9443 You'll initially need to configure the username and password 
+Navigate to Home/local/stacks to add a stack:  click the +Add stack Give it a meaningful name such as Nextcloud  
 Copy and paste the data from the /nc-aio/docker-compose.yml file.  
 Click 'Deploy the stack'  
 
+### 5)  Restore Nextcloud
+First we need to be able to reach the backups.
+I have mine on a windows share.  So first install cifs-utils to enable access to SMB   
+`sudo apt-get install cifs-utils`  
+Create a folder under /media to host the mapping  
+`sudo mkdir /media/ncbackup`
 
+Now use the command ```sudo nano /etc/fstab```
+There were 3 lines in mine.  I just added a new line at the bottom.  
+The format is ```//windowshostname/sharename /media/foldername cifs username=windowsusername,password=windowspassword,iocharset=utf8 0 0```  
+I'd made my share as nc_backup.  Let's imagine the PC hostname was windowspc, and the username was test with a password of pass1234, the command would look like this:  
+```//windowspc/nc_backup /media/ncbackup cifs username=test,password=pass1234,iocharset=utf8 0 0```  
+  
+And mount the drive `sudo mount /media/ncbackup`  
 
+Navigate to https://<IP address>:8080
+Copy the password and tap 'Open Nextcloud AIO login'
+Paste the password in the new tab and login
+Scroll down to the 'Restore former AIO instance from backup'
+Add the mount point and borg password.  The borg password is the encryption key that you needed to note when original system was set up.  If you don't have it available, then restore is not possible cos goos luck breaking the encryption.  
+The mount point is whatever you created, eg /media/ncbackup
+
+Click 'Submit location and password'
+All being you should get an "Everything set!" message, so "Test path and password"
+You should now see 'Backup container is currently running'
+It looks like it doesn't autoupdate.  Check the logs - hopefully you'll see the last entry is 'Everything looks fine so feel free to continue!'  If not, you'll need to fix it (I had used the incorrect user for the share so borg was unable to write.  I fixed it up in fstab and remounted the share and it was happy)  
+Hit reload and you should noe be able to either check backup integrity, or resote from selected backup.  
+The restore option defaults to the latest backup, so roll with that.  
+The restore will start - you'll need to periodically check the log file.  
+
+Eventually, the restore should complete.  Hitting reload will present you back to the main config page showing all the containers are stopped.
+Moment of truth - click the 'Start and update containers' button
+(I had to change my proxy too since the IP and hostname changed)
+After a minute or two, my desktop icon webt green - hooray!  Looks like restore was a success.
 
 # Updating
 It's all well and good having containers, but how do we keep them up to date?
