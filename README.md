@@ -263,20 +263,20 @@ Copy the password and tap 'Open Nextcloud AIO login'
 Paste the password in the new tab and login  
 Scroll down to the 'Restore former AIO instance from backup'  
 Add the mount point and borg password.  The borg password is the encryption key that you needed to note when original system was set up.  If you don't have it available, then restore is not possible cos goos luck breaking the encryption.  
-The mount point is whatever you created, eg `/media/ncbackup`
+The mount point is whatever you created, eg `/media/ncbackup`  
 
-Click 'Submit location and password'
-All being you should get an "Everything set!" message, so "Test path and password"
-You should now see 'Backup container is currently running'
+Click 'Submit location and password'  
+All being you should get an "Everything set!" message, so "Test path and password"  
+You should now see 'Backup container is currently running'  
 It looks like it doesn't autoupdate.  Check the logs - hopefully you'll see the last entry is 'Everything looks fine so feel free to continue!'  If not, you'll need to fix it (I had used the incorrect user for the share so borg was unable to write.  I fixed it up in fstab and remounted the share and it was happy)  
 Hit reload and you should noe be able to either check backup integrity, or resote from selected backup.  
 The restore option defaults to the latest backup, so roll with that.  
 The restore will start - you'll need to periodically check the log file.  
 
-Eventually, the restore should complete.  Hitting reload will present you back to the main config page showing all the containers are stopped.
-Moment of truth - click the 'Start and update containers' button
-(I had to change my proxy too since the IP and hostname changed)
-After a minute or two, my desktop icon webt green - hooray!  Looks like restore was a success.
+Eventually, the restore should complete.  Hitting reload will present you back to the main config page showing all the containers are stopped.  
+Moment of truth - click the 'Start and update containers' button  
+(I had to change my proxy too since the IP and hostname changed)  
+After a minute or two, my desktop icon went green - hooray!  Looks like restore was a success.  
 
 # Updating
 It's all well and good having containers, but how do we keep them up to date?
