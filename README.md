@@ -74,7 +74,7 @@ Since we have portainer installed, we'll use that to run the docker compose to i
 In the Portainer GUI, navigate to Stacks  
 Tap +Add Stack  
 Give it a meaningful name - e.g., npm-reverse-proxy  
-Copy and paste the data from the /reverse-proxy/docker-compose.yml file.  
+Copy and paste the data from the [/reverse-proxy/docker-compose.yml](reverse-proxy/docker-compose.yml) file.  
 It's there as a separate file so it can be run directly using docker compose if your prefer.  
 The file will create the Nginx Proxy Manager using a sqlite database  
 Click 'Deploy the stack'
@@ -96,7 +96,7 @@ Go back to Portainer to create a new Stack
 Go to Stacks, the +Add stack
 Give it a meaningful name such as Nextcloud
 
-Copy and paste the data from the /nc-aio/docker-compose.yml file.
+Copy and paste the data from the [nc-aio/docker-compose.yml](nc-aio/docker-compose.yml) file.
 
 Click 'Deploy the stack'
 
@@ -240,7 +240,7 @@ sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -
 #### Install AIO
 Connect to Portainer using `https://<ip address/or hostname>:9443` You'll initially need to configure the username and password 
 Navigate to Home/local/stacks to add a stack:  click the +Add stack Give it a meaningful name such as Nextcloud  
-Copy and paste the data from the /nc-aio/docker-compose.yml file.  
+Copy and paste the data from the [/nc-aio/docker-compose.yml](/nc-aio/docker-compose.yml) file.  
 Click 'Deploy the stack'  
 
 ### 5)  Restore Nextcloud
