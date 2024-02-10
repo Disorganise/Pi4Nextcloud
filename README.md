@@ -149,12 +149,12 @@ Where 2 character country code is per [The official list](https://en.wikipedia.o
 Include the quotes in the command.  e.g. ```sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="AU"```
 
 # Backups
-Much to my chargrin, I find that Raspbian is not well supported for backup.  I'd intended to use Veeam community to pull the files into my Windows PC but the agent wouldn't install.  grrr.
-So workaround;   I took inspiration from [here](https://raspberrytips.com/backup-raspberry-pi/) but skipped the SFTP etc as it seemed unnecessary.
-Create a folder on the windows PC
-Share it - grant modify rights to a user account both to the share permissions and to the NTFS folder permissions.
+Much to my chargrin, I find that Raspbian is not well supported for backup.  I'd intended to use Veeam community to pull the files into my Windows PC but the agent wouldn't install.  grrr.  
+So workaround;   I took inspiration from [here](https://raspberrytips.com/backup-raspberry-pi/) but skipped the SFTP etc as it seemed unnecessary.  
+Create a folder on the windows PC  
+Share it - grant modify rights to a user account both to the share permissions and to the NTFS folder permissions.  
 
-SSH into the Raspberry Pi
+SSH into the Raspberry Pi  
 Create a folder under /media to host the share mapping.  I used ncbackup so the command is ```sudo mkdir /media/ncbackup```  
 
 Now use the command ```sudo nano /etc/fstab```
@@ -169,20 +169,20 @@ I'd made my share as nc_backup.  Let's imagine the PC hostname was windowspc, an
 Finally, mount the share (or reboot the whole Pi I guess :D)  
 To mount use ```sudo mount /media/ncbackup```  
 
-Navigate to `/media/ncbackup` and try ```sudo touch test.txt``` to validate you can create files in the share.
+Navigate to `/media/ncbackup` and try ```sudo touch test.txt``` to validate you can create files in the share.  
 
-Now head over to `https://<ip/hostname:8080>`
+Now head over to `https://<ip/hostname:8080>`  
 Scroll down to where it is asking for the backup location and enter `/media/ncbackup`  
-You should then get an encryption key which you need to note.
-All being well, you should be able to hit the 'create backup' button and accept the warning that containers will go offline.
-The backup will run with time required depending upon data volume and speed of network.
+You should then get an encryption key which you need to note.  
+All being well, you should be able to hit the 'create backup' button and accept the warning that containers will go offline.  
+The backup will run with time required depending upon data volume and speed of network.  
 
-I noticed that when the backup completed, the nexcloud containers remained stopped and you need to click the 'start containers' button.
-Once the first backup is done, you get the option to set a time for a daily backup - note the time is in UTC so the default of 4am may be inconvenient.
+I noticed that when the backup completed, the nexcloud containers remained stopped and you need to click the 'start containers' button.  
+Once the first backup is done, you get the option to set a time for a daily backup - note the time is in UTC so the default of 4am may be inconvenient.  
 
-Update:  It seems that a manual backup results in the containers remaining offline.  The schedule backup does actually restart the containers, so that's good.
-However, I'm concerned about the receovery process.  The AIO itself has a simple 'restore to this timestamp' option and it is an all or nothing affair - meaning you can't recover an individual file.  I'm not _that_ worried about the files though TBH, since they're also backed up on my PC so I can always retrieve them there and copy back into the Nextcloud folder.
-The concern is more about 'how to recover the whole machine' assuming the disk got currupted.  So that will be the next test.  My plan is to wipe the disk and start again from the beginning.  I'm hoping there's a way to import the existing borg backups so that they can be recovered....but we'll see.
+Update:  It seems that a manual backup results in the containers remaining offline.  The schedule backup does actually restart the containers, so that's good.  
+However, I'm concerned about the receovery process.  The AIO itself has a simple 'restore to this timestamp' option and it is an all or nothing affair - meaning you can't recover an individual file.  I'm not _that_ worried about the files though TBH, since they're also backed up on my PC so I can always retrieve them there and copy back into the Nextcloud folder.  
+The concern is more about 'how to recover the whole machine' assuming the disk got currupted.  So that will be the next test.  My plan is to wipe the disk and start again from the beginning.  I'm hoping there's a way to import the existing borg backups so that they can be recovered....but we'll see.  
 
 ## Recovery Test 
 Since I ended up buying an SSD to run the the Pi, my spinning disk WD passport is now 'spare'.  So I figured I would use that to test recovery.  Documenting my steps here for future reference.  
@@ -269,7 +269,7 @@ Click 'Submit location and password'
 All being you should get an "Everything set!" message, so "Test path and password"  
 You should now see 'Backup container is currently running'  
 It looks like it doesn't autoupdate.  Check the logs - hopefully you'll see the last entry is 'Everything looks fine so feel free to continue!'  If not, you'll need to fix it (I had used the incorrect user for the share so borg was unable to write.  I fixed it up in fstab and remounted the share and it was happy)  
-Hit reload and you should noe be able to either check backup integrity, or resote from selected backup.  
+Hit reload and you should now be able to either check backup integrity, or resote from selected backup.  
 The restore option defaults to the latest backup, so roll with that.  
 The restore will start - you'll need to periodically check the log file.  
 
