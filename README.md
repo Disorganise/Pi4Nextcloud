@@ -16,7 +16,7 @@ I've been running Nextcloud (and prior to that, owncloud) for many years as Hype
 I've a couple of microSD cards become corrupt on me, likely due to the power cuts we see.  The SD cards are too small to be really useful for Nextcloud anyway, so any external USB hard drive will suit the job better.
 
 According to [this article](https://www.pragmaticlinux.com/2021/12/directly-boot-your-raspberry-pi-4-from-a-usb-drive/), most Raspberry Pi4's can boot from USB.  Mine's an 8GB version so I figured it was 'later'.  I originally planned to use the Ubuntu image, but had issues booting from the USB hard drive, so reverted to the Raspbian image.  
-I did try updating the bootloader as mine was April 2020, but it still wouldn't boot the Unbuntu image even after updating to bootloader Jan 2023. 
+I did try updating the bootloader as mine was April 2020, but it still wouldn't boot the Ubuntu image even after updating to bootloader Jan 2023. 
 > Update Feb 2024, I've got ubuntu working now.  I bought a 1TB  USB SSD.
 
 I used the Raspberry Pi Imager to download and install 'Rasberry Pi OS (other)/Rasberry Pi OS Lite (64 bit)' onto the USB Hardrive - in my case it's a WD My Passport 2TB.   
@@ -262,7 +262,7 @@ Navigate to `https://<ip/hostname>:8080`
 Copy the password and tap 'Open Nextcloud AIO login'  
 Paste the password in the new tab and login  
 Scroll down to the 'Restore former AIO instance from backup'  
-Add the mount point and borg password.  The borg password is the encryption key that you needed to note when original system was set up.  If you don't have it available, then restore is not possible cos goos luck breaking the encryption.  
+Add the mount point and borg password.  The borg password is the encryption key that you needed to note when original system was set up.  If you don't have it available, then restore is not possible cos good luck breaking the encryption.  
 The mount point is whatever you created, eg `/media/ncbackup`  
 
 Click 'Submit location and password'  
